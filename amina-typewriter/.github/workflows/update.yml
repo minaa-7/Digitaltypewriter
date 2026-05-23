@@ -1,0 +1,38 @@
+name: 🤖 Mise à jour quotidienne – Digital Typewriter
+
+on:
+  schedule:
+    - cron: "0 5 * * *"   # 07:00 Paris (UTC+2 en été)
+  workflow_dispatch:        # Lancement manuel possible
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: 🔄 Run update script
+        env:
+          NOTION_TOKEN:       ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          GOOGLE_TOKEN:       ${{ secrets.GOOGLE_TOKEN }}
+        run: node update.js
+
+      - name: 💾 Commit & push
+        run: |
+          git config --global user.name  "Amina's Typewriter Bot 🤖"
+          git config --global user.email "bot@amina-typewriter.com"
+          git add index.html
+          git diff --staged --quiet || git commit -m "🤖 Mise à jour du $(date +'%d/%m/%Y à %H:%M')"
+          git push

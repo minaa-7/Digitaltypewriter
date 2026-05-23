@@ -1,0 +1,368 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --printer-w: 380px;
+  --printer-w-small: 416px;
+  --printer-h: calc(var(--printer-w) * 553 / 731);
+  --stack-gap: clamp(16px, 4vh, 56px);
+  --receipt-w: 364px;
+  --slot-y: 170px;
+  --print-overshoot: 80px;
+  --move-duration: 500ms;
+  --print-duration: 6000ms;
+  --zoom: 0.7;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: linear-gradient(180deg, #FFF -10.94%, #FFD9F2 9.26%, #F2D4FF 45.33%, #D5F1FF 79.24%, #CFF0FF 139.11%);
+  background-attachment: fixed;
+}
+
+#stage {
+  zoom: var(--zoom);
+}
+
+.intro {
+  position: fixed;
+  bottom: calc(50% + var(--printer-h) / 2 + var(--stack-gap));
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 3;
+  transition: opacity 300ms;
+}
+
+.printer-wrap {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: var(--printer-w);
+  max-width: 90vw;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  transition:
+    top var(--move-duration) cubic-bezier(.7, 0, .3, 1),
+    transform var(--move-duration) cubic-bezier(.7, 0, .3, 1),
+    width var(--move-duration) cubic-bezier(.7, 0, .3, 1);
+}
+
+.printer {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.heart {
+  position: absolute;
+  top: 0;
+  left: 40px;
+  width: 60px;
+  height: 60px;
+  background: url("assets/heart.png") center / contain no-repeat;
+}
+
+@keyframes heart-slide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(280px); }
+}
+
+.is-printing .heart {
+  animation: heart-slide 1.5s ease-in-out infinite;
+}
+
+.is-printing.is-done .heart {
+  animation: none;
+}
+
+.printer-text {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Pixelify Sans";
+  font-size: 20px;
+  font-weight:300p;
+  color: #AC4C95;
+}
+
+.print-btn {
+  position: fixed;
+  top: calc(50% + var(--printer-h) / 2 + var(--stack-gap));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  width: 180px;
+  aspect-ratio: 921 / 283;
+  background: url("assets/button.png") center / contain no-repeat;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-indent: -9999px;
+  overflow: hidden;
+  transition: opacity 300ms, transform 200ms ease;
+}
+
+.print-btn:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
+.receipt {
+  position: fixed;
+  left: 50%;
+  bottom: var(--slot-y);
+  width: var(--receipt-w);
+  max-width: 80vw;
+  height: auto;
+  border: 2px solid #C76EAB;
+  background: #FFF;
+  box-shadow: 0 12px 28px rgba(172, 76, 149, 0.25), 0 4px 10px rgba(172, 76, 149, 0.15);
+  padding: 16px 20px;
+  font-family: "Pixelify Sans";
+  overflow-wrap: break-word;
+  word-break: break-word;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transform: translate(-50%, 100%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition:
+    transform var(--print-duration) cubic-bezier(.55, .05, .85, .55) var(--move-duration),
+    opacity 200ms linear var(--move-duration);
+}
+
+.is-printing .intro,
+.is-printing .print-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.is-printing .printer-wrap {
+  top: 100%;
+  transform: translate(-50%, -100%);
+  width: var(--printer-w-small);
+}
+
+.is-printing .receipt {
+  transform: translate(-50%, calc(0px - var(--print-overshoot)));
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.is-printing.is-done .printer-wrap {
+  transform: translate(-50%, 0);
+  opacity: 0;
+  transition:
+    transform 400ms cubic-bezier(.4, 0, 1, 1),
+    opacity 350ms ease-out;
+}
+
+.is-printing.is-done .receipt {
+  transform: translate(-50%, calc(var(--slot-y) + 50% - 50vh / var(--zoom)));
+  transition: transform 600ms cubic-bezier(.34, 1.56, .64, 1) 300ms;
+}
+
+@keyframes receipt-wiggle {
+  0%   { transform: rotate(0deg) translateY(0); }
+  18%  { transform: rotate(-3deg) translateY(-3px); }
+  45%  { transform: rotate(4deg) translateY(0); }
+  72%  { transform: rotate(-1.5deg) translateY(-1px); }
+  100% { transform: rotate(0deg) translateY(0); }
+}
+
+.receipt.is-wiggle {
+  animation: receipt-wiggle 550ms cubic-bezier(.34, 1.56, .64, 1);
+  animation-composition: add;
+}
+
+.receipt ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.receipt h2,
+.receipt h3 {
+  font-weight: 400;
+}
+
+.receipt h2 {
+  color: #EC6E9E;
+}
+
+.receipt-date {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-family: "Pixelify Sans";
+  font-size: 12px;
+  color: #C76EAB;
+}
+
+.receipt-section,
+.receipt-section a {
+  color: var(--section-color);
+}
+
+.receipt-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.receipt-section-events {
+  --section-color: #EC6E9E;
+}
+
+.receipt-section-todos {
+  --section-color: #9E6EDA;
+}
+
+.events li,
+.todos li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.todos .todo {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 150ms ease;
+}
+
+.todos .todo.done {
+  opacity: 0.5;
+}
+
+.todos .todo.done .label {
+  text-decoration: line-through;
+}
+
+.events .label,
+.todos .label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-icon,
+.todo-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  flex-shrink: 0;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+
+.event-icon.event-work {
+  background-image: url("assets/event-work-label.png");
+}
+
+.event-icon.event-personal {
+  background-image: url("assets/event-personal-label.png");
+}
+
+.todo-icon.todo-work {
+  background-image: url("assets/todo-work-label.png");
+}
+
+.todo-icon.todo-personal {
+  background-image: url("assets/todo-personal-label.png");
+}
+
+h1 {
+  color: #AC4C95;
+  text-align: center;
+  font-family: "Pixelify Sans";
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+
+}
+
+h1 .caret {
+  display: inline-block;
+  width: 0.6ch;
+  margin-left: 2px;
+  animation: caret-blink 700ms steps(1, end) infinite;
+}
+
+@keyframes caret-blink {
+  0%, 50%   { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #C76EAB;
+}
+
+.bg-decors {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-sparkles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-sparkle {
+  position: absolute;
+  background: #fff;
+  image-rendering: pixelated;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  will-change: opacity, transform;
+  animation: sparkle-twinkle var(--dur, 3s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0; transform: translateY(0) scale(0.6); }
+  50%      { opacity: 1; transform: translateY(-6px) scale(1); }
+}
+
+.bg-decor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+  will-change: transform;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.sparkle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10;
+  font-family: "Pixelify Sans";
+  line-height: 1;
+  will-change: transform, opacity;
+  animation: sparkle-fly 650ms ease-out forwards;
+}
+
+@keyframes sparkle-fly {
+  0%   { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 1; }
+  30%  { transform: translate(calc(-50% + var(--dx) * 0.35), calc(-50% + var(--dy) * 0.35)) scale(1.15) rotate(120deg); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0) rotate(360deg); opacity: 0; }
+}
+

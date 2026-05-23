@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Amina's Daily Summary</title>
+  <link rel="icon" type="image/png" href="assets/heart.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-sparkles" aria-hidden="true"></div>
+  <div class="bg-decors" aria-hidden="true"></div>
+  <main id="stage">
+    <header class="intro">
+      <h1>Amina's Daily Summary</h1>
+    </header>
+
+    <div class="printer-wrap">
+      <img src="assets/printer.png" alt="printer" class="printer" />
+      <div class="printer-text">₊✩‧₊˚print me₊✩‧₊˚</div>
+      <div class="heart"></div>
+    </div>
+    <button id="printBtn" class="print-btn" type="button"></button>
+
+    <article class="receipt" id="receipt">
+      <span class="receipt-date" id="receiptDate"></span>
+      <h2>My silly day</h2>
+      <hr />
+      <section class="receipt-section receipt-section-events">
+        <h3>Events</h3>
+        <ul class="events">
+          <li><span class="event-icon event-work">work</span><span class="label">Work Event 1</span><span class="time">10:00&ndash;11:00</span></li>
+          <li><span class="event-icon event-personal">personal</span><span class="label">Personal Event 1</span><span class="time">14:00&ndash;15:00</span><a href="https://meet.google.com/kmv-xgof-eik">link</a></li>
+          <li><span class="event-icon event-work">work</span><span class="label">Work Event 2</span><span class="time">16:00&ndash;17:00</span></li>
+          </ul>
+      </section>
+      <hr />
+      <section class="receipt-section receipt-section-todos">
+        <h3>To do list</h3>
+        <ul class="todos">
+          <li class="todo"><span class="todo-icon todo-personal">personal</span><span class="label">Personal Task 1</span></li>
+          <li class="todo"><span class="todo-icon todo-personal">personal</span><span class="label">Personal Task 2</span></li>
+          <li class="todo"><span class="todo-icon todo-personal">personal</span><span class="label">Personal Task 3</span></li>
+          <li class="todo"><span class="todo-icon todo-work">work</span><span class="label">Work Task 1</span></li>
+          </ul>
+      </section>
+    </article>
+  </main>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
