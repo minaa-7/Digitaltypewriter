@@ -92,7 +92,7 @@ async function getNotionTodos() {
           { property: "Fait ?", checkbox: { equals: false } },
           { or: [
             { property: "Deadline", date: { equals: today } },
-            { property: "Day",      select: { equals: todayFR } },
+            { property: "Day",      multi_select: { contains: todayFR } },
           ]},
         ],
       },
